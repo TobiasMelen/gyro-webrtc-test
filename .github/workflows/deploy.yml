@@ -1,0 +1,28 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('client-app/yarn.lock') }}
+
+      - name: Install and build
+        run: |
+          yarn --prod
+          yarn build --base /${{ github.event.repository.name }}/
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_DEPLOYMENT_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: client-app/dist
