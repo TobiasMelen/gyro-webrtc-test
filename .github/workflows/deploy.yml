@@ -4,8 +4,8 @@ on:
     branches:
       - main
 jobs:
-  name: Build and deploy to GitHub Pages
   build-and-deploy:
+    name: Build and deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
