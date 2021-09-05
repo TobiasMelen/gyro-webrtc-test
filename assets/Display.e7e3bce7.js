@@ -23,4 +23,4 @@ fh=gh).exports=function(e){var t={},n=p,r=u.exports,i=d.exports;function a(e){fo
   display: flex;
   justify-content: center;
   align-items: center;
-`,id=e=>h.createElement("main",l(o({},e),{className:rd}));function ad({id:e}){const t=f(`wss://signaling-server.tobbes.site/${e}`),n=E(t.socket);return"failed"===t.status?h.createElement(id,null,h.createElement(L,null,"Can't connect to signaling server")):0===Object.keys(n).length?h.createElement(id,null,h.createElement(pe,null,`${window.location.protocol}//${window.location.host}#device/${e}`)):h.createElement(td,{devices:n})}export{ad as default};
+`,id=e=>h.createElement("main",l(o({},e),{className:rd}));function ad({id:e}){const t=f(`wss://signaling-server.tobbes.site/${e}`),n=E(t.socket);return"failed"===t.status?h.createElement(id,null,h.createElement(L,null,"Can't connect to signaling server")):0===Object.keys(n).length?h.createElement(id,null,h.createElement(pe,null,`${window.location.origin+window.location.pathname}#device/${e}`)):h.createElement(td,{devices:n})}export{ad as default};
