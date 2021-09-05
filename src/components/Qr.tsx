@@ -34,7 +34,15 @@ export default function Qr({
     return () => context.clearRect(0, 0, canvas.width, canvas.height);
   }, [children, canvasRef.current]);
   return (
-    <div style={{ padding: 35, borderRadius: 50, background: "white" }}>
+    <div
+      style={{
+        padding: ".75em",
+        borderRadius: "1em",
+        background: "white",
+        maxHeight: "8em",
+        maxWidth: "8em",
+      }}
+    >
       <canvas
         {...props}
         ref={canvasRef}
