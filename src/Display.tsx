@@ -34,9 +34,11 @@ export default function Display({ id }: { id: string }) {
   if (Object.keys(devices).length === 0) {
     return (
       <Wrap>
-        <Qr>{`${window.location.protocol}//${window.location.host}#device/${id}`}</Qr>
+        <Qr>{`${
+          window.location.origin + window.location.pathname
+        }#device/${id}`}</Qr>
       </Wrap>
     );
   }
-  return <DeviceRender devices={devices}/>
+  return <DeviceRender devices={devices} />;
 }
