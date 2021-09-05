@@ -7,10 +7,10 @@ type Props = {
 
 const bobFrames = keyframes`
  from {
-   transform: translateY(-.1em);
+   transform: translateY(-.1em) scale(.98);
  }
  to {
-   transform: translateY(.1em);
+   transform: translateY(.1em) scale(1);
  }
 `;
 
