@@ -5,7 +5,7 @@ type Props = {
   bob?: boolean;
 };
 
-const bob = keyframes`
+const bobFrames = keyframes`
  from {
    transform: translateY(-.1em);
  }
@@ -23,7 +23,7 @@ const style = (bob?: boolean) => css`
   max-width: 90vw;
   ${bob
     ? `
-        animation: ${bob} 0.75s ease-in-out alternate-reverse infinite;
+        animation: ${bobFrames} 0.75s ease-in-out alternate-reverse infinite;
       `
     : ""};
 `;
