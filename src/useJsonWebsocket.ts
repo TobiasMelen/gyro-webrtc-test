@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 
-export type JsonSocket = NonNullable<ReturnType<typeof useWsRelay>["socket"]>;
+export type JsonSocket = NonNullable<
+  ReturnType<typeof useJsonWebsocket>["socket"]
+>;
 
-export default function useWsRelay(url?: string, reconnectAttempts = 5) {
-  const [retries, setRetries] = useState(0);
-  const failedAllRetries = retries > reconnectAttempts;
+export default function useJsonWebsocket(url?: string) {
   const [socket, setSocket] = useState<WebSocket>();
+  const [connectionFailed, setConnectionFailed] = useState(false);
+
   //Clear socket on url changes
   useEffect(() => {
     setSocket((socket) => {
@@ -15,29 +17,27 @@ export default function useWsRelay(url?: string, reconnectAttempts = 5) {
       }
       return undefined;
     });
-    setRetries(0);
   }, [url]);
+
   useEffect(() => {
-    if (!url || socket != null || failedAllRetries) {
+    if (!url || socket != null) {
       return;
     }
     const s = new WebSocket(url);
-    let retryTimeout: number;
     s.onclose = () => {
-      retryTimeout = window.setTimeout(() => {
-        setRetries((r) => r + 1);
+      //If we just had an open socket, retry once by resetting socket value.
+      if (socket != null) {
         setSocket(undefined);
-      }, 1000);
+      } else {
+        setConnectionFailed(true);
+      }
     };
     s.onopen = () => {
       setSocket(s);
-      setRetries(0);
     };
     s.onerror = () => s.close();
-    return () => {
-      window.clearTimeout(retryTimeout);
-    };
-  }, [url, retries, socket]);
+  }, [url, socket]);
+
   const jsonSocket = useMemo(
     () =>
       socket
@@ -57,9 +57,7 @@ export default function useWsRelay(url?: string, reconnectAttempts = 5) {
   );
   return jsonSocket == null
     ? {
-        status: failedAllRetries
-          ? ("failed" as const)
-          : ("connecting" as const),
+        status: connectionFailed ? ("error" as const) : ("connecting" as const),
       }
     : { status: "connected" as const, socket: jsonSocket };
 }

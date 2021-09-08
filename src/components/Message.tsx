@@ -7,17 +7,17 @@ type Props = {
 
 const bobFrames = keyframes`
  from {
-   transform: translateY(-.1em) scale(.98);
+   transform: translateY(-.1em);
  }
  to {
-   transform: translateY(.1em) scale(1);
+   transform: translateY(.1em);
  }
 `;
 
 const style = (bob?: boolean) => css`
   font-size: 1em;
   text-align: center;
-  font-weight: 900;
+  font-weight: bold;
   user-select: none;
   margin: 1em auto;
   max-width: 90vw;

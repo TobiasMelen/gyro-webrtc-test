@@ -1,97 +1,41 @@
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { PlayerData } from "./playerData";
-import useWsRelay from "./useWsRelay";
-
-type Props = {
-  lobbyName: string;
-};
-
-type ConnectionStatus = "connected" | "connecting" | "empty" | "error";
+import { DevicePosition, positionToBuffer } from "./devicePosition";
+import useJsonWebsocket from "./useJsonWebsocket";
+import useLocalStorageState from "./useLocalStorageState";
+import useDataChannelConnector from "./webrtc/useDataChannelConnector";
+import { jsonSocketToSignalInterface } from "./webrtc/webrtcShared";
 
 export default function useDeviceSender(receiverId: string) {
-  const deviceId = useMemo(() => localStorage["connection-id"] ?? uuid(), []);
-  useEffect(() => localStorage.setItem("connection-id", deviceId));
+  const [deviceId] = useLocalStorageState("connection-id", uuid());
 
-  const signalingSocket = useWsRelay(
+  const signalingSocket = useJsonWebsocket(
     //@ts-ignore
     `${import.meta.env.VITE_SIGNAL_URL}/${deviceId}`
   );
 
-  const [lobbyMessageChannel, setLobbyMessageChannel] =
-    useState<(data: PlayerData) => void>();
-  const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("connecting");
+  const signalingInterface = useMemo(
+    () =>
+      signalingSocket.socket
+        ? jsonSocketToSignalInterface(signalingSocket.socket, deviceId)
+        : undefined,
+    [signalingSocket.socket, deviceId]
+  );
 
-  useEffect(() => {
-    if (signalingSocket.status !== "connected" || lobbyMessageChannel != null) {
-      return;
-    }
+  const rtcConnection = useDataChannelConnector(receiverId, signalingInterface);
 
-    const peerConnection = new RTCPeerConnection({
-      iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
-    });
-
-    const channel = peerConnection.createDataChannel("Client data channel", {
-      maxRetransmits: 1,
-      ordered: false,
-    });
-    channel.onopen = () => {
-      setLobbyMessageChannel(
-        () => (data: PlayerData) => channel.send(JSON.stringify(data))
-      );
-      setConnectionStatus("connected")
-    };
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate != null) {
-        signalingSocket.socket.send({
-          to: receiverId,
-          from: deviceId,
-          data: event.candidate.toJSON(),
-        });
-      }
-    };
-    peerConnection.oniceconnectionstatechange = () => {
-      const disconnect = () => {
-        setConnectionStatus("error");
-      };
-      switch (peerConnection.iceConnectionState) {
-        case "disconnected":
-        case "failed": {
-          disconnect();
-          break;
-        }
-      }
-    };
-    let timeout: number;
-    signalingSocket.socket.addListener(async ({ data }) => {
-      clearTimeout(timeout);
-      if (data.type === "answer") {
-        await peerConnection.setRemoteDescription(data);
-      } else if ("candidate" in data) {
-        await peerConnection.addIceCandidate(data);
-      }
-    });
-    peerConnection.createOffer().then(async (offer) => {
-      timeout = window.setTimeout(() => {
-        setConnectionStatus((connectionStatus) =>
-          connectionStatus !== "error" ? "empty" : "error"
-        );
-      }, 1000);
-      await peerConnection.setLocalDescription(offer);
-      signalingSocket.socket.send({
-        data: offer,
-        to: receiverId,
-        from: deviceId,
-      });
-    });
-  }, [lobbyMessageChannel, receiverId, signalingSocket]);
-
-  return [
-    lobbyMessageChannel,
-    signalingSocket.status === "connected"
-      ? connectionStatus
-      : signalingSocket.socket,
-  ] as const;
+  return useMemo(
+    () =>
+      [
+        signalingSocket.status !== "connected"
+          ? signalingSocket.status
+          : rtcConnection.status,
+        rtcConnection.status === "connected"
+          ? (...params: number[]) => {
+              rtcConnection.sendMessage(new Float32Array(params));
+            }
+          : null,
+      ] as const,
+    [signalingSocket.status, rtcConnection]
+  );
 }
