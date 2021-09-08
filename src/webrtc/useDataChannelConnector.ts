@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Connection,
   DataChannelDataTypes,
-  SignalingInterface,
+  SignalingInterface
 } from "./webrtcShared";
 
 const defaultConfig = {
@@ -88,7 +88,7 @@ export default function useDataChannelConnector<
       await peerConnection.setLocalDescription(offer);
       signalingInterface.sendSignalingMessage(connectTo, offer);
     });
-    //return peerConnection.close;
+    //return () => peerConnection.close();
   }, [connection.status, signalingInterface, connectTo]);
 
   return connection;

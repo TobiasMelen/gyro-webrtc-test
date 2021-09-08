@@ -1,9 +1,6 @@
-import React, { lazy, Suspense } from "react";
-import { useEffect } from "react";
-import { v4 as uuid } from "uuid";
-import MainContainer from "./MainContainer";
 import { createGlobalStyles as createGlobalStyle } from "goober/global";
-import { bgColor, primaryColor } from "../constants";
+import React, { lazy, Suspense } from "react";
+import MainContainer from "./MainContainer";
 
 const GlobalStyle = createGlobalStyle`
 body {
@@ -11,27 +8,27 @@ body {
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     sans-serif;
   font-weight: 700;
-  background-color: ${bgColor};
-  color: ${primaryColor};
+  background-color: pink;
+  color: hotpink;
   margin: 0;
   font-size: 6vmin;
 }
 `;
 
 export default function App() {
-  const hash = window.location.hash.substring(1) || uuid();
-  useEffect(() => {
-    window.location.hash = hash;
-  }, [hash]);
-  const id = hash.substring(hash.lastIndexOf("/") + 1);
-  const isDeviceView = hash.startsWith("device");
-  const Inner = isDeviceView ? Device : Display;
+  const hashedId = window.location.hash.substring(1);
   return (
     <Suspense fallback="">
       <GlobalStyle />
-      <MainContainer fullHeight={!isDeviceView}>
-        <Inner id={id} />
-      </MainContainer>
+      {hashedId ? (
+        <MainContainer>
+          <Device id={hashedId} />
+        </MainContainer>
+      ) : (
+        <MainContainer fullHeight>
+          <Display />
+        </MainContainer>
+      )}
     </Suspense>
   );
 }

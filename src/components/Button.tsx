@@ -1,5 +1,4 @@
 import { styled } from "goober";
-import { bgColor, primaryColor } from "../constants";
 
 export default styled("button")`
   all: unset;
@@ -9,8 +8,8 @@ export default styled("button")`
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 0.8em;
-  color: ${bgColor};
-  background-color: ${primaryColor};
+  color: pink;
+  background-color: hotpink;
   appearance: none;
   margin: 0;
 `;

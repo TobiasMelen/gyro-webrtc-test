@@ -5,23 +5,16 @@ import { writeBufferToPosition } from "./devicePosition";
 import { jsonSocketToSignalInterface } from "./webrtc/webrtcShared";
 import useDataChannelListener from "./webrtc/useDataChannelListener";
 
-const startingPlayerData = { alpha: 0, beta: 0, gamma: 0, x: 0, y: 0, z: 0 };
+const startingPlayerData = { x: 0, y: 0, z: 0, w: 0 };
 
 export default function useDeviceReceiver(id: string) {
-  const signalingSocket = useJsonWebsocket(
+  const { status, socket } = useJsonWebsocket(
     //@ts-ignore
     `${import.meta.env.VITE_SIGNAL_URL}/${id}`
   );
-  // const [devices, setDevices] = useState<{
-  //   [id: string]: typeof startingPlayerData;
-  // }>({});
-
   const signalingInterface = useMemo(
-    () =>
-      signalingSocket.socket
-        ? jsonSocketToSignalInterface(signalingSocket.socket, id)
-        : null,
-    [signalingSocket.socket, id]
+    () => (socket ? jsonSocketToSignalInterface(socket, id) : null),
+    [socket, id]
   );
 
   const connections = useDataChannelListener<ArrayBuffer>(signalingInterface);
@@ -32,9 +25,10 @@ export default function useDeviceReceiver(id: string) {
         const position = { ...startingPlayerData };
         connection.onMessage(({ data }) => {
           const array = new Float32Array(data);
-          position.alpha = array[0];
-          position.beta = array[1];
-          position.gamma = array[2];
+          position.x = array[0];
+          position.y = array[1];
+          position.z = array[2];
+          position.w = array[3];
           // position.x = array[3];
           // position.y = array[4];
           // position.z = array[5];

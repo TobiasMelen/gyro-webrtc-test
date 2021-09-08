@@ -44,9 +44,9 @@ export default function useDataChannelListener<TData extends DataChannelDataType
             unbindPeerSignaling();
             setConnections((connections) => {
               if (from in connections && connections[from] === channelHooks) {
-                const newDevices = { ...connections };
-                delete newDevices[from];
-                return newDevices;
+                const newConnections = { ...connections };
+                delete newConnections[from];
+                return newConnections;
               }
               return connections;
             });

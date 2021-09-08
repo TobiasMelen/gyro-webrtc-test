@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const tryGetLocalStorageValue = (key: string) => {
-  const item = localStorage.getItem(key);
+  const item = localStorage?.getItem(key);
   try {
     return item != null ? JSON.parse(localStorage[key]) : null;
   } catch {
@@ -17,7 +17,7 @@ export default function useLocalStorageState<TState>(
     tryGetLocalStorageValue(storageKey) ?? defaultValue
   );
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(state));
+    localStorage?.setItem(storageKey, JSON.stringify(state));
   }, [state]);
   return [state, setState] as const;
 }

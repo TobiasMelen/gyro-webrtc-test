@@ -8,6 +8,20 @@ export default function useJsonWebsocket(url?: string) {
   const [socket, setSocket] = useState<WebSocket>();
   const [connectionFailed, setConnectionFailed] = useState(false);
 
+  useEffect(() => {
+    if (!url || socket != null) {
+      return;
+    }
+    const s = new WebSocket(url);
+    s.onclose = () => {
+      setConnectionFailed(true);
+    };
+    s.onopen = () => {
+      setSocket(s);
+    };
+    s.onerror = () => s.close();
+  }, [url, socket]);
+
   //Clear socket on url changes
   useEffect(() => {
     setSocket((socket) => {
@@ -19,24 +33,10 @@ export default function useJsonWebsocket(url?: string) {
     });
   }, [url]);
 
+  //When socket has opened, set next disconnect to retry instead of error.
   useEffect(() => {
-    if (!url || socket != null) {
-      return;
-    }
-    const s = new WebSocket(url);
-    s.onclose = () => {
-      //If we just had an open socket, retry once by resetting socket value.
-      if (socket != null) {
-        setSocket(undefined);
-      } else {
-        setConnectionFailed(true);
-      }
-    };
-    s.onopen = () => {
-      setSocket(s);
-    };
-    s.onerror = () => s.close();
-  }, [url, socket]);
+    socket && (socket.onclose = () => setSocket(undefined));
+  }, [socket]);
 
   const jsonSocket = useMemo(
     () =>
@@ -55,6 +55,7 @@ export default function useJsonWebsocket(url?: string) {
         : null,
     [socket]
   );
+
   return jsonSocket == null
     ? {
         status: connectionFailed ? ("error" as const) : ("connecting" as const),

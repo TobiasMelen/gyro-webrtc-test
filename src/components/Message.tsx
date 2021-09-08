@@ -17,7 +17,7 @@ const bobFrames = keyframes`
 const style = (bob?: boolean) => css`
   font-size: 1em;
   text-align: center;
-  font-weight: bold;
+  font-weight: 900;
   user-select: none;
   margin: 1em auto;
   max-width: 90vw;
