@@ -1,0 +1,16 @@
+var e,t=Object.defineProperty,r=Object.defineProperties,n=Object.getOwnPropertyDescriptors,o=Object.getOwnPropertySymbols,a=Object.prototype.hasOwnProperty,s=Object.prototype.propertyIsEnumerable,i=(e,r,n)=>r in e?t(e,r,{enumerable:!0,configurable:!0,writable:!0,value:n}):e[r]=n;import{a as u,R as l,c,p as f}from"./vendor.9ccb11d5.js";var p=new Uint8Array(16);function d(){if(!e&&!(e="undefined"!=typeof crypto&&crypto.getRandomValues&&crypto.getRandomValues.bind(crypto)||"undefined"!=typeof msCrypto&&"function"==typeof msCrypto.getRandomValues&&msCrypto.getRandomValues.bind(msCrypto)))throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");return e(p)}var m=/^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;function g(e){return"string"==typeof e&&m.test(e)}for(var v=[],y=0;y<256;++y)v.push((y+256).toString(16).substr(1));function b(e,t,r){var n=(e=e||{}).random||(e.rng||d)();if(n[6]=15&n[6]|64,n[8]=63&n[8]|128,t){r=r||0;for(var o=0;o<16;++o)t[r+o]=n[o];return t}return function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,r=(v[e[t+0]]+v[e[t+1]]+v[e[t+2]]+v[e[t+3]]+"-"+v[e[t+4]]+v[e[t+5]]+"-"+v[e[t+6]]+v[e[t+7]]+"-"+v[e[t+8]]+v[e[t+9]]+"-"+v[e[t+10]]+v[e[t+11]]+v[e[t+12]]+v[e[t+13]]+v[e[t+14]]+v[e[t+15]]).toLowerCase();if(!g(r))throw TypeError("Stringified UUID is invalid");return r}(n)}function S(e){const[t,r]=u.exports.useState(),[n,o]=u.exports.useState(!1);u.exports.useEffect((()=>{if(!e||null!=t)return;const n=new WebSocket(e);n.onclose=()=>{o(!0)},n.onopen=()=>{r(n)},n.onerror=()=>n.close()}),[e,t]),u.exports.useEffect((()=>{r((e=>{e&&(e.onclose=null,null==e||e.close())}))}),[e]),u.exports.useEffect((()=>{t&&(t.onclose=()=>r(void 0))}),[t]);const a=u.exports.useMemo((()=>t?{addListener(e){const r=({data:t})=>e(JSON.parse(t));return t.addEventListener("message",r),()=>t.removeEventListener("message",r)},send(e){t.send(JSON.stringify(e))}}:null),[t]);return null==a?{status:n?"error":"connecting"}:{status:"connected",socket:a}}function O(e,t){var r;const[n,o]=u.exports.useState(null!=(r=(e=>{const t=null==localStorage?void 0:localStorage.getItem(e);try{return null!=t?JSON.parse(localStorage[e]):null}catch{return null}})(e))?r:t);return u.exports.useEffect((()=>{null==localStorage||localStorage.setItem(e,JSON.stringify(n))}),[n]),[n,o]}function w(e,t){return{onSignalingMessage:t=>e.addListener((e=>"from"in e&&"data"in e&&t(e.from,e.data))),sendSignalingMessage:(r,n)=>e.send({to:r,from:t,data:n})}}const x=c`
+ from {
+   transform: translateY(-.1em);
+ }
+ to {
+   transform: translateY(.1em);
+ }
+`,h=e=>f`
+  font-size: 1em;
+  text-align: center;
+  font-weight: 900;
+  user-select: none;
+  margin: 1em auto;
+  max-width: 90vw;
+  ${e?`\n        animation: ${x} 0.75s ease-in-out alternate-reverse infinite;\n      `:""};
+`;function E(e){var t,u,c=e,{bob:f}=c,p=((e,t)=>{var r={};for(var n in e)a.call(e,n)&&t.indexOf(n)<0&&(r[n]=e[n]);if(null!=e&&o)for(var n of o(e))t.indexOf(n)<0&&s.call(e,n)&&(r[n]=e[n]);return r})(c,["bob"]);return l.createElement("h1",(t=((e,t)=>{for(var r in t||(t={}))a.call(t,r)&&i(e,r,t[r]);if(o)for(var r of o(t))s.call(t,r)&&i(e,r,t[r]);return e})({},p),u={className:h(f)},r(t,n(u))))}export{E as M,S as a,w as j,O as u,b as v};
